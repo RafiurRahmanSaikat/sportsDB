@@ -10,14 +10,27 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+
     <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
   </head>
   <body>
     <main>
       <section id="playerDetails"></section>
 
       <!-- Search Bar Start -->
-
+      <script>
+        document.getElementById("playerDescription").textContent =
+          (player?.strDescriptionEN || "No description available.").match(
+            /(([^\s]+\s\s*){10})(.*)/
+          )?.[1] || "";
+      </script>
       <section class="py-3">
         <div class="container">
           <div class="d-flex justify-content-between">
@@ -39,9 +52,28 @@
 
       <!-- Search Bar End -->
 
-      <section class="foodItems">
-        <div class="container">
-          <div class="row" id="players"></div>
+      <section>
+        <div class="container-fluid">
+          <div class="row mx-auto p-2">
+            <div class="col-md-8">
+              <div id="players" class="row row-gap-3"></div>
+            </div>
+            <!-- Details Panel -->
+            <div class="col-md-4">
+              <div
+                class="card"
+                style="position: fixed; width: 35rem; right: 1rem"
+              >
+                <div class="card-body">
+                  <h5 class="card-title">Details Panel</h5>
+                  <p class="card-text">
+                    This is the details panel that will be fixed on the right
+                    side of the page.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
