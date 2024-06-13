@@ -1,16 +1,18 @@
+const playerDetails = document.querySelector("#playerDetails");
+const playerContainer = document.querySelector("#players");
+const searchBtn = document.querySelector("#searchBtn");
+const playerName = document.querySelector("#playerName");
+const totalPlayer = document.querySelector("#totalPlayer");
+const playerList = document.querySelector("#playerList");
+
 const fetchData = (name) => {
   fetch(`https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${name}`)
     .then((res) => res.json())
     .then((data) => {
       showPlayers(data?.player);
-      console.log(data);
+      console.log(data.player[0]);
     });
 };
-
-const playerDetails = document.querySelector("#playerDetails");
-const playerContainer = document.querySelector("#players");
-const searchBtn = document.querySelector("#searchBtn");
-const playerName = document.querySelector("#playerName");
 
 const loadAll = () => {
   fetchData("");
@@ -26,29 +28,16 @@ const loadAll = () => {
   });
 };
 
-const loadPlayerDetails = (id) => {
-  fetch(`https://www.thesportsdb.com/api/v1/json/3/lookupplayer.php?id=${id}`)
-    .then((res) => res.json())
-    .then((data) => {
-      let player = data?.players?.[0];
-      console.log(data?.players?.[0]);
-      showModal(player);
-    });
-};
-
 const showModal = (player) => {
-  const modal = document.createElement("div");
   console.log(player);
-  modal.innerHTML = `
-    <div class="modal fade" id="modal-${
-      player?.idPlayer
-    }" tabindex="-1" aria-labelledby="modal-${player?.idPlayer}-label">
+  playerDetails.innerHTML = `
+    <div class="modal fade"
+    id="modalPlayer"
+    tabindex="-1" aria-labelledby="modal-label">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modal-${player?.idPlayer}-label">${
-    player?.strPlayer
-  }</h5>
+            <h5 class="modal-title" id="modal-label">${player?.strPlayer}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -61,22 +50,20 @@ const showModal = (player) => {
   }">
               </div>
               <div class="col-md-8">
-                <p>${
-                  player?.strDescriptionEN || "No description available."
-                }</p>
+
                 <div class="row">
                   <div class="col-md-4">
                     <p><strong>Team:</strong> ${player?.strTeam || "N/A"}</p>
-                    <p><strong>National Team:</strong> ${
-                      player?.strNationalTeam || "N/A"
+                    <p><strong>Date Of Birth:</strong> ${
+                      player?.dateBorn || "N/A"
                     }</p>
                   </div>
                   <div class="col-md-4">
                     <p><strong>Height:</strong> ${
                       player?.strHeight || "N/A"
                     }</p>
-                    <p><strong>Weight:</strong> ${
-                      player?.strWeight || "N/A"
+                    <p><strong>Ethnicity:</strong> ${
+                      player?.strEthnicity || "N/A"
                     }</p>
                   </div>
                   <div class="col-md-4">
@@ -87,8 +74,12 @@ const showModal = (player) => {
                       player?.strNationality || "N/A"
                     }</p>
                   </div>
-                </div>
+
+
+
+
               </div>
+              <p>${player?.strDescriptionEN || "No description available."}</p>
             </div>
           </div>
           <div class="modal-footer">
@@ -98,10 +89,11 @@ const showModal = (player) => {
       </div>
     </div>
   `;
-  playerDetails.appendChild(modal);
-  const modalEl = document.getElementById(`modal-${player?.idPlayer}`);
-  const modalInstance = new bootstrap.Modal(modalEl);
-  modalInstance.show();
+
+  // playerDetails.appendChild(modal);
+  const modalD = document.getElementById(`modal-${player?.idPlayer}`);
+  const modalFire = new bootstrap.Modal("#modalPlayer");
+  modalFire.show();
 };
 
 const showPlayers = (players) => {
@@ -128,7 +120,7 @@ const showPlayers = (players) => {
               </div>
               <div class="text-center">
                 <h5>${player?.strPlayer}</h5>
-                <p class="text-muted">Nationality</p>
+                <p class="text-muted">${player?.strNationality}</p>
                 <div class="d-flex justify-content-start rounded-3 p-1 mb-1 bg-body-tertiary">
                   <div>
                     <p class="small text-muted mb-1">Team</p>
@@ -147,7 +139,7 @@ const showPlayers = (players) => {
                   <a href="${player?.strInstagram || "#"}" target="_blank">
                     <i class="fa-brands fs-2 m-2 fa-instagram"></i>
                   </a>
-                  <a href="${player?.strFacebook || "#"}">
+                  <a href="${player?.strFacebook || "#"}" target="_blank">
                     <i class="fa-brands fs-2 m-2 fa-facebook"></i>
                   </a>
 
@@ -155,9 +147,7 @@ const showPlayers = (players) => {
                   <button
                     type="button"
                     onclick="loadPlayerDetails(${player?.idPlayer})"
-                    class="m-2 btn btn-outline-primary btn-sm"
-
-                  >
+                    class="m-2 btn btn-outline-primary btn-sm">
                     Details
                   </button>
 
@@ -165,12 +155,17 @@ const showPlayers = (players) => {
                 </div>
                 <div class="d-flex pt-1 align-items-center justify-content-center">
                   <button
-                    type="button"
-                    class="m-2 btn btn-primary flex-grow-1 btn-sm"
+                  onclick="addToTeam(event,${player.idPlayer},'${
+        player.strPlayer
+      }',
+                    '${player.strThumb}')"
+                  class="m-2 btn btn-primary flex-grow-1 btn-sm">
 
-                  >
                     Add To Team
+
                   </button>
+
+
                 </div>
               </div>
             </div>
@@ -186,6 +181,49 @@ const showPlayers = (players) => {
       `;
       playerContainer.appendChild(div);
     });
+  }
+};
+const loadPlayerDetails = (id) => {
+  console.log(id);
+  fetch(`https://www.thesportsdb.com/api/v1/json/3/lookupplayer.php?id=${id}`)
+    .then((res) => res.json())
+    .then((data) => showModal(data?.players?.[0]));
+};
+const team = [];
+const addToTeam = (event, id, name, img) => {
+  // console.log(id, name, img);
+  console.log(event);
+  if (team.length < 11) {
+    if (!team.includes(id)) {
+      team.push(id);
+      event.target.classList.remove("btn-primary");
+      event.target.classList.add("btn-danger");
+      event.target.innerText = "Already Added";
+      let player = document.createElement("li");
+      player.classList.add("list-group-item", "d-flex", "align-items-center");
+      player.innerHTML = `
+
+        <div class="d-flex align-items-center ">
+        <img
+          src=${img}
+          alt=${img}
+          style="width: 45px; height: 45px"
+          class="rounded-circle"
+        />
+        <div class="ms-3">
+          <p class="fw-bold mb-1">${name}</p>
+          <p class="text-muted mb-0">${name}</p>
+        </div>
+      </div>
+
+        `;
+      playerList.appendChild(player);
+      totalPlayer.innerText = team.length;
+    } else {
+      alert("Team already");
+    }
+  } else {
+    alert("Team is full");
   }
 };
 
